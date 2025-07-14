@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Purchase - Off POS</title>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6c63ff;
+            --primary-light: #f1efff;
+            --secondary: #4a44a8;
+            --dark: #2e2e2e;
+            --light: #f9f9f9;
+            --gray: #888;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 270px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+            color: var(--primary);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--dark);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .sidebar-menu a.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a.active .iconify {
+            color: var(--primary);
+        }
+        
+        .sidebar-menu .iconify {
+            font-size: 1.25rem;
+            color: var(--gray);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title .iconify {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        .items-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .items-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        
+        .total-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .total-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .discount-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .discount-input {
+            flex: 1;
+        }
+        
+        .discount-type {
+            width: 120px;
+        }
+        
+        .payment-options {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .payment-option {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-option.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .payment-option .iconify {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .payment-option.active .iconify {
+            color: var(--primary);
+        }
+        
+        .payment-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-desc {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            background: #f8f8f8;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .file-upload {
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-label:hover {
+            background: #f0f0f0;
+        }
+        
+        .file-name {
+            margin-top: 0.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+            }
+        }
+        .due-input {
+    width: 80px;           /* Adjust width as needed */
+    padding: 4px 8px;      /* Spacing inside input */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px;     /* Rounded corners */
+    font-size: inherit;    /* Matches surrounding text */
+}
+/* Base dropdown styling */
+.dropdown {
+    position: relative;
+    list-style: none;
+}
+
+.dropdown-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 8px 0;
+    z-index: 100;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block; /* Show on hover */
+}
+
+.dropdown-menu li {
+    padding: 0;
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background: #f5f5f5;
+}
+
+/* Dropdown arrow animation */
+.dropdown-arrow {
+    transition: transform 0.2s;
+}
+
+.dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Off POS</div>
+            <ul class="sidebar-menu">
+                <li><a href="#"><iconify-icon icon="solar:database-broken"></iconify-icon> Dashboard</a></li>
+                <li class="dropdown">
+    <a href="#" class="active">
+        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+        Purchase
+        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+    </a>
+            <ul class="dropdown-menu">
+                <li><a href="Purchase/AddPurchase.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Purchase</a></li>
+                <li><a href="Purchase/AddSupplier.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> Add supplier</a></li>
+                <li><a href="Purchase/ListPurchase.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Purchase</a></li>
+                <li><a href="Purchase/ListSupplier.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Supplier</a></li>
+            </ul>
+</li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Supplier Payment
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SupplierPayment/AddSupplierPayement.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Supplier Payment</a></li>
+                        <li><a href="SupplierPayment/ListSupplierPayment.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Supplier Payment</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Income
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Income/AddIncome.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income</a></li>
+                        <li><a href="Income/ListIncome.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income</a></li>
+                        <li><a href="Income/AddIncomeItem.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income Item</a></li>
+                        <li><a href="Income/ListIncomeItem.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income Item</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SaleReturn/AddSaleReturn.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Sale Return</a></li>
+                        <li><a href="SaleReturn/ListSaleReturn.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Sale Return</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Payroll/ListPayroll.html"><iconify-icon icon="solar:box-broken"></iconify-icon> List Payroll</a></li>
+                        
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1 class="page-title">Add Purchase</h1>
+            </div>
+
+            <div class="card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label required">Reference No</label>
+                        <input type="text" class="form-control" placeholder="000002">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Supplier</label>
+                        <select class="form-control">
+                            <option value="">Select Supplier</option>
+                            <option value="1">Supplier A</option>
+                            <option value="2">Supplier B</option>
+                            <option value="3">Supplier C</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Status</label>
+                        <select class="form-control">
+                            <option value="">Select Status</option>
+                            <option value="1">Draft</option>
+                            <option value="2">Supplier B</option>
+                            <option value="3">Supplier C</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Date</label>
+                        <input type="date" class="form-control" value="2025-07-13">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required"> Purchase Date</label>
+                        <input type="date" class="form-control" value="2025-07-13">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Purchase Reference No</label>
+                        <input type="text" class="form-control" placeholder="Reference No">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                        <label class="form-label required">Item</label>
+                        <select class="form-control">
+                            <option value="">Select Item</option>
+                            <option value="1">Draft</option>
+                            <option value="2">Supplier B</option>
+                            <option value="3">Supplier C</option>
+                        </select>
+                    </div>
+                
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Item-Code-Brand</th>
+                            <th>Medicine/IMEI/Serial</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>No items added</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="section-divider"></div>
+                
+                <div class="form-row">
+                    
+                    
+                    <div class="form-group">
+                        <label class="form-label required">G. Total</label>
+                        <input type="text" class="form-control" placeholder="Grand Total">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                
+                <div class="form-group">
+                    <label class="form-label">Note</label>
+                    <textarea class="form-control" rows="3" placeholder="Add any notes here..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary">
+                        <iconify-icon icon="solar:check-circle-broken"></iconify-icon>
+                        Submit
+                    </button>
+                    <button class="btn btn-primary">
+                        <iconify-icon icon="solar:check-circle-broken"></iconify-icon>
+                        Save and Add More
+                    </button>
+                    <button class="btn btn-primary">
+                        <iconify-icon icon="solar:Back"></iconify-icon>
+                        Back
+                    </button>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Payment option selection
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.payment-option').forEach(el => {
+                    el.classList.remove('active');
+                });
+                option.classList.add('active');
+            });
+        });
+        
+        // File upload display
+        document.getElementById('attachment').addEventListener('change', function(e) {
+            const fileName = document.querySelector('.file-name');
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'No file chosen';
+            }
+        });
+        
+        // Form validation
+        document.querySelector('.btn-primary').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Simple validation
+            const supplier = document.querySelector('select[name="supplier"]');
+            const items = document.querySelector('select[name="items"]');
+            const account = document.querySelector('select[name="account"]');
+            
+            if (!supplier.value || !items.value || !account.value) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            alert('Purchase added successfully!');
+            // In a real app, you would submit the form here
+        });
+    </script>
+</body>
+</html>
