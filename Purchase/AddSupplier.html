@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Purchase - Off POS</title>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6c63ff;
+            --primary-light: #f1efff;
+            --secondary: #4a44a8;
+            --dark: #2e2e2e;
+            --light: #f9f9f9;
+            --gray: #888;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 270px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+            color: var(--primary);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--dark);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .sidebar-menu a.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a.active .iconify {
+            color: var(--primary);
+        }
+        
+        .sidebar-menu .iconify {
+            font-size: 1.25rem;
+            color: var(--gray);
+        }
+        
+        /* Base dropdown styling */
+        .dropdown {
+            position: relative;
+            list-style: none;
+        }
+        
+        .dropdown-menu {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: block; /* Show on hover */
+        }
+        
+        .dropdown-menu li {
+            padding: 0;
+        }
+        
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-menu a:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Dropdown arrow animation */
+        .dropdown-arrow {
+            transition: transform 0.2s;
+        }
+        
+        .dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group label.required:after {
+            content: " *";
+            color: var(--danger);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        /* Balance Type Dropdown - Specific Styles */
+.balance-type-dropdown {
+    position: relative;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.balance-type-toggle {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: white;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #2e2e2e;
+    transition: all 0.3s ease;
+}
+
+.balance-type-toggle:hover {
+    border-color: #6c63ff;
+}
+
+.balance-type-toggle .dropdown-icon {
+    font-size: 1.25rem;
+    color: #888;
+    transition: transform 0.3s ease;
+}
+
+.balance-type-dropdown.active .balance-type-toggle .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.balance-type-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.balance-type-dropdown.active .balance-type-menu {
+    display: block;
+}
+
+.balance-type-menu li {
+    list-style: none;
+}
+
+.balance-type-option {
+    display: block;
+    padding: 10px 16px;
+    color: #2e2e2e;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.balance-type-option:hover {
+    background: #f1efff;
+    color: #6c63ff;
+}
+
+.balance-type-input {
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Off POS</div>
+            <ul class="sidebar-menu">
+                <li><a href="#"><iconify-icon icon="solar:database-broken"></iconify-icon> Dashboard</a></li>
+                <li class="dropdown">
+    <a href="#" class="active">
+        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+        Purchase
+        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+    </a>
+            <ul class="dropdown-menu">
+                <li><a href="Purchase/AddPurchase.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Purchase</a></li>
+                <li><a href="Purchase/AddSupplier.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> Add supplier</a></li>
+                <li><a href="Purchase/ListPurchase.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Purchase</a></li>
+                <li><a href="Purchase/ListSupplier.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Supplier</a></li>
+            </ul>
+</li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Supplier Payment
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SupplierPayment/AddSupplierPayement.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Supplier Payment</a></li>
+                        <li><a href="SupplierPayment/ListSupplierPayment.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Supplier Payment</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Income
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Income/AddIncome.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income</a></li>
+                        <li><a href="Income/ListIncome.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income</a></li>
+                        <li><a href="Income/AddIncomeItem.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income Item</a></li>
+                        <li><a href="Income/ListIncomeItem.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income Item</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SaleReturn/AddSaleReturn.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Sale Return</a></li>
+                        <li><a href="SaleReturn/ListSaleReturn.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Sale Return</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Payroll/ListPayroll.html"><iconify-icon icon="solar:box-broken"></iconify-icon> List Payroll</a></li>
+                        
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Add Supplier</h1>
+                </div>
+                
+                <form>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="name" class="required">Name</label>
+                                <input type="text" id="name" class="form-control" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" class="form-control" placeholder="Address">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contact-person" class="required">Contact Person</label>
+                                <input type="text" id="contact-person" class="form-control" placeholder="Contact Person">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="opening-balance">Opening Balance</label>
+                                <input type="text" id="opening-balance" class="form-control" placeholder="Opening Balance">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="phone" class="required">Phone</label>
+                                <input type="text" id="phone" class="form-control" placeholder="Phone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input type="text" id="description" class="form-control" placeholder="Description">
+                            </div>
+                        </div>
+                    </div>
+                    
+<div class="form-group">
+    <label class="required">Balance Type</label>
+    <div class="balance-type-dropdown">
+        <button type="button" class="balance-type-toggle">
+            <span class="selected-option">Debit</span>
+            <iconify-icon icon="mdi:chevron-down" class="dropdown-icon"></iconify-icon>
+        </button>
+        <ul class="balance-type-menu">
+            <li><a href="#" class="balance-type-option" data-value="debit">Debit</a></li>
+            <li><a href="#" class="balance-type-option" data-value="credit">Credit</a></li>
+        </ul>
+        <input type="hidden" name="balance-type" class="balance-type-input" value="debit">
+    </div>
+</div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-outline">Save And Add More</button>
+                        <button type="button" class="btn btn-outline">Back</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        // Payment option selection
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.payment-option').forEach(el => {
+                    el.classList.remove('active');
+                });
+                option.classList.add('active');
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+    const dropdown = document.querySelector('.balance-type-dropdown');
+    const toggle = dropdown.querySelector('.balance-type-toggle');
+    const menu = dropdown.querySelector('.balance-type-menu');
+    const options = dropdown.querySelectorAll('.balance-type-option');
+    const hiddenInput = dropdown.querySelector('.balance-type-input');
+    const selectedOption = dropdown.querySelector('.selected-option');
+    
+    // Toggle dropdown
+    toggle.addEventListener('click', function() {
+        dropdown.classList.toggle('active');
+    });
+    
+    // Select option
+    options.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const value = this.getAttribute('data-value');
+            const text = this.textContent;
+            
+            selectedOption.textContent = text;
+            hiddenInput.value = value;
+            dropdown.classList.remove('active');
+        });
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+});
+    </script>
+</body>
+</html>

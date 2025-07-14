@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Supplier Payment - Off POS</title>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6c63ff;
+            --primary-light: #f1efff;
+            --secondary: #4a44a8;
+            --dark: #2e2e2e;
+            --light: #f9f9f9;
+            --gray: #888;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --table-header: #f8f9fa;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 270px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+            color: var(--primary);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--dark);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .sidebar-menu a.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a.active .iconify {
+            color: var(--primary);
+        }
+        
+        .sidebar-menu .iconify {
+            font-size: 1.25rem;
+            color: var(--gray);
+        }
+        
+        /* Base dropdown styling */
+        .dropdown {
+            position: relative;
+            list-style: none;
+        }
+        
+        .dropdown-menu {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: block; /* Show on hover */
+        }
+        
+        .dropdown-menu li {
+            padding: 0;
+        }
+        
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-menu a:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Dropdown arrow animation */
+        .dropdown-arrow {
+            transition: transform 0.2s;
+        }
+        
+        .dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Table Controls */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .entries-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .entries-control select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+        }
+        
+        .search-control {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0 12px;
+            width: 250px;
+        }
+        
+        .search-control input {
+            padding: 8px;
+            width: 100%;
+            border: none;
+            outline: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .action-btn.filter {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+        
+        .action-btn.filter:hover {
+            background: #f8f8f8;
+        }
+        
+        .action-btn.export {
+            background: var(--success);
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: var(--table-header);
+            text-align: left;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        
+        .supplier-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .amount-badge {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .action-icon.view {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+        }
+        
+        .action-icon.edit {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .action-icon.delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .action-icon:hover {
+            opacity: 0.8;
+        }
+        
+        /* Footer Styles */
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .total-display {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .total-label {
+            font-weight: 500;
+            color: var(--gray);
+            margin-bottom: 4px;
+        }
+        
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+        }
+        
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination-btn:hover:not(.active) {
+            background: #f8f8f8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 900px;
+            }
+            
+            .table-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .table-footer {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Off POS</div>
+            <ul class="sidebar-menu">
+                <li><a href="#"><iconify-icon icon="solar:database-broken"></iconify-icon> Dashboard</a></li>
+                <li class="dropdown">
+    <a href="#" class="active">
+        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+        Purchase
+        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+    </a>
+            <ul class="dropdown-menu">
+                <li><a href="Purchase/AddPurchase.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Purchase</a></li>
+                <li><a href="Purchase/AddSupplier.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> Add supplier</a></li>
+                <li><a href="Purchase/ListPurchase.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Purchase</a></li>
+                <li><a href="Purchase/ListSupplier.html"><iconify-icon icon="solar:tag-price-broken"></iconify-icon> List Supplier</a></li>
+            </ul>
+</li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Supplier Payment
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SupplierPayment/AddSupplierPayement.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Supplier Payment</a></li>
+                        <li><a href="SupplierPayment/ListSupplierPayment.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Supplier Payment</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Income
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Income/AddIncome.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income</a></li>
+                        <li><a href="Income/ListIncome.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income</a></li>
+                        <li><a href="Income/AddIncomeItem.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Income Item</a></li>
+                        <li><a href="Income/ListIncomeItem.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Income Item</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="SaleReturn/AddSaleReturn.html"><iconify-icon icon="solar:box-broken"></iconify-icon> Add Sale Return</a></li>
+                        <li><a href="SaleReturn/ListSaleReturn.html"><iconify-icon icon="solar:receipt-broken"></iconify-icon> List Sale Return</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="active">
+                        <iconify-icon icon="solar:archive-broken"></iconify-icon> 
+                        Sale Return
+                        <iconify-icon icon="mdi:chevron-down" class="dropdown-arrow"></iconify-icon>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="Payroll/ListPayroll.html"><iconify-icon icon="solar:box-broken"></iconify-icon> List Payroll</a></li>
+                        
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1 class="page-title">List Supplier Payments</h1>
+            </div>
+            
+            <!-- Table Controls -->
+            <div class="table-controls">
+                <div class="entries-control">
+                    <span>Show</span>
+                    <select>
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                        <option>100</option>
+                    </select>
+                    <span>entries</span>
+                </div>
+                
+                <div class="search-control">
+                    <iconify-icon icon="mdi:magnify"></iconify-icon>
+                    <input type="text" placeholder="Search Here...">
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn">
+                    <iconify-icon icon="mdi:plus"></iconify-icon>
+                    Add Supplier Payment
+                </button>
+                <button class="action-btn filter">
+                    <iconify-icon icon="mdi:filter"></iconify-icon>
+                    Filter By
+                </button>
+                <button class="action-btn export">
+                    <iconify-icon icon="mdi:file-export"></iconify-icon>
+                    Export
+                </button>
+            </div>
+            
+            <!-- Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Amount</th>
+                            <th>Account</th>
+                            <th>Note</th>
+                            <th>Added By</th>
+                            <th>Added Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>2025-07-12</td>
+                            <td class="supplier-cell">
+                                <strong>ABC Suppliers</strong>
+                                <span class="amount-badge">NPR 15,000.00</span>
+                            </td>
+                            <td>NPR 15,000.00</td>
+                            <td>Bank of America (****1234)</td>
+                            <td>Monthly payment</td>
+                            <td>Admin</td>
+                            <td>2025-07-12 14:30</td>
+                            <td class="actions-cell">
+                                <div class="action-icon view">
+                                    <iconify-icon icon="mdi:eye"></iconify-icon>
+                                </div>
+                                <div class="action-icon edit">
+                                    <iconify-icon icon="mdi:pencil"></iconify-icon>
+                                </div>
+                                <div class="action-icon delete">
+                                    <iconify-icon icon="mdi:delete"></iconify-icon>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>2025-07-10</td>
+                            <td class="supplier-cell">
+                                <strong>XYZ Wholesale</strong>
+                                <span class="amount-badge">NPR 8,500.00</span>
+                            </td>
+                            <td>NPR 8,500.00</td>
+                            <td>Cash Account</td>
+                            <td>Partial payment</td>
+                            <td>Manager</td>
+                            <td>2025-07-10 10:15</td>
+                            <td class="actions-cell">
+                                <div class="action-icon view">
+                                    <iconify-icon icon="mdi:eye"></iconify-icon>
+                                </div>
+                                <div class="action-icon edit">
+                                    <iconify-icon icon="mdi:pencil"></iconify-icon>
+                                </div>
+                                <div class="action-icon delete">
+                                    <iconify-icon icon="mdi:delete"></iconify-icon>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2025-07-08</td>
+                            <td class="supplier-cell">
+                                <strong>Global Imports Ltd</strong>
+                                <span class="amount-badge">NPR 22,300.00</span>
+                            </td>
+                            <td>NPR 22,300.00</td>
+                            <td>Chase Business (****5678)</td>
+                            <td>International shipment</td>
+                            <td>Admin</td>
+                            <td>2025-07-08 16:45</td>
+                            <td class="actions-cell">
+                                <div class="action-icon view">
+                                    <iconify-icon icon="mdi:eye"></iconify-icon>
+                                </div>
+                                <div class="action-icon edit">
+                                    <iconify-icon icon="mdi:pencil"></iconify-icon>
+                                </div>
+                                <div class="action-icon delete">
+                                    <iconify-icon icon="mdi:delete"></iconify-icon>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>2025-07-05</td>
+                            <td class="supplier-cell">
+                                <strong>Tech Supply Co.</strong>
+                                <span class="amount-badge">NPR 12,750.00</span>
+                            </td>
+                            <td>NPR 12,750.00</td>
+                            <td>PayPal</td>
+                            <td>IT equipment</td>
+                            <td>Admin</td>
+                            <td>2025-07-05 11:20</td>
+                            <td class="actions-cell">
+                                <div class="action-icon view">
+                                    <iconify-icon icon="mdi:eye"></iconify-icon>
+                                </div>
+                                <div class="action-icon edit">
+                                    <iconify-icon icon="mdi:pencil"></iconify-icon>
+                                </div>
+                                <div class="action-icon delete">
+                                    <iconify-icon icon="mdi:delete"></iconify-icon>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>2025-07-01</td>
+                            <td class="supplier-cell">
+                                <strong>Office Essentials Inc.</strong>
+                                <span class="amount-badge">NPR 7,200.00</span>
+                            </td>
+                            <td>NPR 7,200.00</td>
+                            <td>Credit Card</td>
+                            <td>Office supplies</td>
+                            <td>Manager</td>
+                            <td>2025-07-01 09:30</td>
+                            <td class="actions-cell">
+                                <div class="action-icon view">
+                                    <iconify-icon icon="mdi:eye"></iconify-icon>
+                                </div>
+                                <div class="action-icon edit">
+                                    <iconify-icon icon="mdi:pencil"></iconify-icon>
+                                </div>
+                                <div class="action-icon delete">
+                                    <iconify-icon icon="mdi:delete"></iconify-icon>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Footer with Total and Pagination -->
+            <div class="table-footer">
+                <div class="total-display">
+                    <div class="total-label">Total</div>
+                    <div class="total-amount">NPR 65,750.00</div>
+                </div>
+                
+                <div class="pagination">
+                    <div class="pagination-btn active">1</div>
+                    <div class="pagination-btn">2</div>
+                    <div class="pagination-btn">3</div>
+                    <div class="pagination-btn">4</div>
+                    <div class="pagination-btn">></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Add functionality to action buttons
+        document.querySelector('.action-btn').addEventListener('click', function() {
+            alert('Redirecting to Add Supplier Payment page...');
+            // In a real application, this would navigate to the Add Supplier Payment page
+        });
+        
+        // Add functionality to search input
+        const searchInput = document.querySelector('.search-control input');
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                alert(`Searching for: "${this.value}"`);
+                // In a real application, this would filter the table
+            }
+        });
+        
+        // Add functionality to pagination buttons
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    document.querySelector('.pagination-btn.active').classList.remove('active');
+                    this.classList.add('active');
+                    alert(`Navigating to page ${this.textContent}`);
+                    // In a real application, this would load the next page of results
+                }
+            });
+        });
+    </script>
+</body>
+</html>
